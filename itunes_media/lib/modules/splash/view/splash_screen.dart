@@ -16,7 +16,7 @@ class SplashScreen extends ConsumerWidget {
     return Scaffold(
       body: securityCheckAsyncValue.when(
         data: (securityStatus) {
-          if (securityStatus == SecurityCheckStatus.passed) {
+          if (securityStatus != SecurityCheckStatus.passed) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               Navigator.pushReplacement(
                   context,

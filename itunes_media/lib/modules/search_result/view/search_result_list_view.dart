@@ -39,7 +39,6 @@ class SearchResultListView extends StatelessWidget {
                   leading: CustomNetworkImage(
                     imageUrl: item.artworkUrl100,
                     height: 0.1.sh,
-                    width: 0.01.sh,
                   ),
                   title: Text(
                     item.trackName ?? 'Unknown Title',

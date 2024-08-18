@@ -4,7 +4,9 @@ import 'package:itunes_media/common/api_handler/api_response_state.dart';
 import 'package:itunes_media/common/common_widgets/error_widget.dart';
 import 'package:itunes_media/common/common_widgets/loading_widget.dart';
 import 'package:itunes_media/modules/itunes_search/model/itunes_model.dart';
+import 'package:itunes_media/modules/itunes_search/model/search_input_model.dart';
 import 'package:itunes_media/modules/itunes_search/view_model/itunes_search_view_model.dart';
+import 'package:itunes_media/modules/itunes_search/view_model/search_query_view_model.dart';
 import 'package:itunes_media/modules/search_result/model/media_type_model.dart';
 import 'package:itunes_media/modules/search_result/view/search_result_view.dart';
 
@@ -35,8 +37,11 @@ class SearchResultScreen extends ConsumerWidget {
                 return ErrorViewWidget(
                   message: state.message ?? "Error",
                   onRetry: () {
-                    ref.read(iTunesSearchViewProvider.notifier).fetchItems(
-                        ref.watch(searchInputProvider.notifier).state);
+                    final SearchInputModel searchInputData =
+                        ref.read(searchInputProvider);
+                    ref
+                        .read(iTunesSearchViewProvider.notifier)
+                        .fetchItems(searchInputData);
                   },
                 );
               default:

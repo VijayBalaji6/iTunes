@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:itunes_media/modules/itunes_search/model/search_input_model.dart';
 import 'package:itunes_media/modules/itunes_search/view/result_view/search_result_screen.dart';
 import 'package:itunes_media/modules/itunes_search/view_model/itunes_search_view_model.dart';
+import 'package:itunes_media/modules/itunes_search/view_model/search_query_view_model.dart';
 
 class SearchMediaScreen extends ConsumerWidget {
   SearchMediaScreen({super.key});
@@ -11,7 +13,8 @@ class SearchMediaScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isButtonEnabled = ref.watch(searchInputProvider).isNotEmpty;
+    final SearchInputModel searchInputProviderData =
+        ref.watch(searchInputProvider);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -46,7 +49,7 @@ class SearchMediaScreen extends ConsumerWidget {
               TextField(
                 controller: searchTextEditingController,
                 onChanged: (text) {
-                  ref.read(searchInputProvider.notifier).state = text;
+                  ref.read(searchInputProvider.notifier).updateSearchTerm(text);
                 },
                 decoration: InputDecoration(
                   hintText: 'Enter search term',
@@ -69,33 +72,22 @@ class SearchMediaScreen extends ConsumerWidget {
                 ),
               ),
               SizedBox(height: 0.02.sh),
-              const Wrap(
+              Wrap(
                 spacing: 8,
                 children: [
-                  Chip(
-                    label: Text('album'),
-                    backgroundColor: Colors.grey,
-                  ),
-                  Chip(
-                    label: Text('movie'),
-                    backgroundColor: Colors.grey,
-                  ),
-                  Chip(
-                    label: Text('musicVideo'),
-                    backgroundColor: Colors.grey,
-                  ),
-                  Chip(
-                    label: Text('song'),
-                    backgroundColor: Colors.grey,
-                  ),
+                  buildSelectionChips(chipName: 'movie', providerRef: ref),
+                  buildSelectionChips(chipName: 'music', providerRef: ref),
+                  buildSelectionChips(chipName: 'musicVideo', providerRef: ref),
+                  buildSelectionChips(chipName: 'tvShow', providerRef: ref),
                 ],
               ),
               SizedBox(height: .04.sh),
               ElevatedButton(
-                onPressed: isButtonEnabled
+                onPressed: searchInputProviderData.searchTerm.isNotEmpty
                     ? () {
-                        ref.read(iTunesSearchViewProvider.notifier).fetchItems(
-                            searchTextEditingController.text.trim());
+                        ref
+                            .read(iTunesSearchViewProvider.notifier)
+                            .fetchItems(searchInputProviderData);
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -120,6 +112,29 @@ class SearchMediaScreen extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget buildSelectionChips(
+      {required String chipName, required WidgetRef providerRef}) {
+    final bool isChipSelected =
+        providerRef.watch(searchInputProvider).mediaType == (chipName);
+    return GestureDetector(
+      onTap: () {
+        if (!isChipSelected) {
+          providerRef
+              .read(searchInputProvider.notifier)
+              .updateSelectedMediaType(chipName);
+        } else {
+          providerRef
+              .read(searchInputProvider.notifier)
+              .removeSelectedMediaType(chipName);
+        }
+      },
+      child: Chip(
+        label: Text(chipName),
+        backgroundColor: isChipSelected ? Colors.blue : Colors.grey,
       ),
     );
   }

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:itunes_media/modules/itunes_search/model/itunes_model.dart';
-import 'package:itunes_media/modules/itunes_search/view_model/itunes_search_view_model.dart';
+import 'package:itunes_media/modules/itunes_search/view_model/search_query_view_model.dart';
 import 'package:itunes_media/modules/search_result/model/media_type_model.dart';
 import 'package:itunes_media/modules/search_result/view/search_result_grid_view.dart';
 import 'package:itunes_media/modules/search_result/view/search_result_list_view.dart';
@@ -17,7 +17,7 @@ class SearchDataView extends StatelessWidget {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         final isListView = ref.watch(searchDataViewModelProvider);
-        final String searchedContent = ref.read(searchInputProvider);
+        final String searchedContent = ref.read(searchInputProvider).searchTerm;
         return Padding(
           padding: const EdgeInsets.all(8.0),
           child: AnimatedSwitcher(
